@@ -62,6 +62,9 @@
     #start { background: #ff9800; }
     #start:hover { background: #ffb74d; transform: scale(1.05); }
 
+    #stopBtn { background: #00c853; display: none; }
+    #stopBtn:hover { background: #00e676; transform: scale(1.05); }
+
     .grid {
       display: grid;
       grid-template-columns: repeat(5, 60px);
@@ -100,6 +103,7 @@
     <input type="number" id="betAmount" placeholder="Valor da aposta (R$)" />
     <br />
     <button id="start">Iniciar Jogo</button>
+    <button id="stopBtn">🛑 Parar e Sacar</button>
 
     <div class="grid" id="grid"></div>
 
@@ -111,6 +115,7 @@
     const saldoEl = document.getElementById("saldo");
     const betInput = document.getElementById("betAmount");
     const startBtn = document.getElementById("start");
+    const stopBtn = document.getElementById("stopBtn");
     const gridEl = document.getElementById("grid");
     const statusEl = document.getElementById("status");
 
@@ -142,6 +147,7 @@
       atualizarSaldo();
       statusEl.textContent = "😎 Encontre todas as casas seguras!";
       startBtn.disabled = true;
+      stopBtn.style.display = "inline-block";
       playing = true;
       revealed = 0;
       bombs = [];
@@ -188,9 +194,18 @@
       }
     }
 
+    function pararEReceber() {
+      if (!playing) return;
+      const ganho = (betAmount * (1 + (revealed * 0.2))).toFixed(2);
+      saldo += parseFloat(ganho);
+      statusEl.textContent = `🛑 Você parou o jogo e sacou R$ ${ganho}`;
+      fimDeJogo(true);
+    }
+
     function fimDeJogo(ganhou) {
       playing = false;
       startBtn.disabled = false;
+      stopBtn.style.display = "none";
 
       // Revela todas as bombas
       const cells = document.querySelectorAll(".cell");
@@ -210,6 +225,7 @@
     }
 
     startBtn.addEventListener("click", iniciarJogo);
+    stopBtn.addEventListener("click", pararEReceber);
     atualizarSaldo();
   </script>
 </body>
